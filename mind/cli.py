@@ -1,4 +1,4 @@
-"""Terminal chat. Commands: /state /traits /thoughts /memories /quit"""
+"""Terminal chat. Commands: /state /traits /thoughts /memories /raw /quit"""
 from .config import Config
 from .engine import Mind
 from .llm import OllamaClient
@@ -14,7 +14,7 @@ def main() -> None:
         OllamaClient(cfg.subconscious_model, cfg.ollama_url, temperature=0.3),
         cfg,
     )
-    print(f"mind ({cfg.conscious_model} / {cfg.subconscious_model}). /state /traits /thoughts /memories /quit")
+    print(f"mind ({cfg.conscious_model} / {cfg.subconscious_model}). /state /traits /thoughts /memories /raw /quit")
     while True:
         try:
             msg = input("\nyou> ").strip()
@@ -33,6 +33,8 @@ def main() -> None:
         elif msg == "/thoughts":
             for t in store.get_thoughts():
                 print(f"  ~ {t}")
+        elif msg == "/raw":
+            print(mind.conscious.last_raw or "(nothing yet)")
         elif msg == "/memories":
             for m in store.get_memories():
                 print(f"  [{m.kind}] {m.text}")

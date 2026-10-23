@@ -45,3 +45,9 @@ def test_claim_extraction_and_check():
     assert [(c.key, c.value, st) for c, st in v.contradictions] == [("favorite_color", "yellow", "black")]
     assert consistency.check(s, "My favorite color is black.").contradictions == []
     assert consistency.check(s, "my favorite food is ramen.").novel[0].key == "favorite_food"
+
+
+def test_conscious_reply_without_reply_tag():
+    o = conscious.parse_output("<thought>hm</thought><decision>reply</decision>\nProbably a black sports car.")
+    assert o.decision == "reply" and o.reply == "Probably a black sports car."
+    assert conscious.parse_output("<thought>hm</thought><decision>reply</decision>").reply == ""

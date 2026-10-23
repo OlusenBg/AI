@@ -42,6 +42,15 @@ class Mind:
         # 4-6. Conscious speaks from the updated snapshot; contradictions force a rewrite.
         out: ConsciousOutput = self.conscious.respond(window, urges, memories)
         notes, regens = [], 0
+        if out.decision != "stay_silent" and not out.reply:
+            notes.append("empty reply, asked again")
+            out = self.conscious.respond(
+                window, urges, memories,
+                f"You decided to {out.decision} but wrote nothing inside <reply>. Write what you actually say out loud.",
+            )
+            if not out.reply and out.decision != "stay_silent":
+                notes.append("still empty; treated as silence")
+                out = ConsciousOutput(out.thought, "stay_silent", "")
         verdict = consistency.check(self.store, out.reply)
         while verdict.contradictions and regens < self.config.max_regenerations:
             regens += 1

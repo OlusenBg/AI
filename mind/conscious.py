@@ -44,10 +44,10 @@ def parse_output(text: str) -> ConsciousOutput:
         decision = next((d for d in DECISIONS if d in decision), "reply")
     if reply_m:
         reply = reply_m.group(1).strip()
-    elif not thought_m and not dec_m:
-        reply = text.strip()
     else:
-        reply = ""
+        # Small models often forget the <reply> tag and just write the answer after the others.
+        reply = _TAG("thought").sub("", _TAG("decision").sub("", text))
+        reply = re.sub(r"</?(?:thought|decision|reply)>", "", reply, flags=re.I).strip()
     if decision == "stay_silent":
         reply = ""
     return ConsciousOutput(thought, decision, reply)
@@ -66,6 +66,7 @@ def build_system_prompt(store: SelfStore, urges: list[str], memories: list[str])
 class Conscious:
     def __init__(self, store: SelfStore, llm: LLM):
         self.store, self.llm = store, llm
+        self.last_raw = ""
 
     def respond(
         self, history: list[dict], urges: list[str], memories: list[str], correction: str | None = None
@@ -73,4 +74,5 @@ class Conscious:
         messages = [{"role": "system", "content": build_system_prompt(self.store, urges, memories)}, *history]
         if correction:
             messages.append({"role": "system", "content": correction})
-        return parse_output(self.llm.chat(messages))
+        self.last_raw = self.llm.chat(messages)
+        return parse_output(self.last_raw)

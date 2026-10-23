@@ -84,3 +84,15 @@ def test_idle_tick_decays_toward_baseline():
     t[0] = 3600
     mind.idle_tick()
     assert store.get_state()["irritation"] < 0.35
+
+
+def test_empty_reply_is_asked_again():
+    empty = "<thought>t</thought><decision>reply</decision><reply></reply>"
+    r = Mind(SelfStore(), FakeLLM([empty, con("A black car, I guess.")]), sub_llm(), CFG).turn("what car do you like?")
+    assert r.reply == "A black car, I guess." and "empty reply, asked again" in r.notes
+
+
+def test_persistently_empty_reply_becomes_silence_not_a_blank_reply():
+    empty = "<thought>t</thought><decision>reply</decision><reply></reply>"
+    r = Mind(SelfStore(), FakeLLM([empty]), sub_llm(), CFG).turn("hello")
+    assert r.decision == "stay_silent" and r.reply == ""
