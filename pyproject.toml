@@ -1,0 +1,22 @@
+[project]
+name = "mind"
+version = "0.1.0"
+description = "A local LLM with emotions, a subconscious it cannot control, and memory that shapes its personality"
+requires-python = ">=3.11"
+dependencies = ["pydantic>=2"]
+
+[project.optional-dependencies]
+dev = ["pytest"]
+
+[project.scripts]
+mind = "mind.cli:main"
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+packages = ["mind"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

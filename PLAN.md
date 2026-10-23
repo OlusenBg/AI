@@ -154,6 +154,23 @@ wins and the conscious is corrected.
 6. **Idle loop:** autonomous thinking and messaging first.
 7. **Web UI.**
 
+## Status
+
+Done (milestones 1-5 in code, tested with a fake LLM, not yet run against a real model):
+Self store, emotions + decay, subconscious (JSON, decide-before-speak), conscious
+(thought/decision/reply), claims check with regeneration, short/long-term memory with
+consolidation, `idle_tick`, CLI, model benchmark script.
+
+Left:
+- Pick the model (run `scripts/benchmark_models.py`), tune prompts against it.
+- Real-model testing: JSON reliability of the small subconscious model, claim regexes
+  (currently only catch "my favorite X is Y"), refusal rate.
+- Background idle loop that runs `idle_tick` on a timer and lets it message you first.
+- Memory retrieval by relevance (embeddings); currently recency only.
+- Personality drift pass (`revise_trait`, baseline shifts) during consolidation.
+- FastAPI backend + web UI (chat, emotion bars, private-thought viewer).
+- Optional: LoRA finetune if the model keeps acting like an assistant.
+
 ## Open questions
 
 - Exact GPU VRAM (8 vs 12 GB) decides whether the subconscious model runs on
